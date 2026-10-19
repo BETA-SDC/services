@@ -16,7 +16,7 @@ from server.test_support import signup_payload
 class ValidationTests(unittest.TestCase):
     def test_normalization_and_existing_input_rules(self):
         registration = validate_registration({
-            "username": " user_demo ", "email": " Demo@WESTLAKE.EDU.CN ",
+            "username": " user_demo ", "email": " Demo@WESTLAKE.EDU.CN ", "student_id": "S20260001",
         })
         self.assertEqual((registration.username, registration.email),
                          ("user_demo", "demo@westlake.edu.cn"))

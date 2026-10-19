@@ -37,6 +37,10 @@
               <label for="nickname">昵称 <span class="optional-label">（可选）</span></label>
               <input id="nickname" name="nickname" autocomplete="nickname" maxlength="40" placeholder="你喜欢的称呼">
             </div>
+            <div class="field" id="student-id-field">
+              <label for="student-id">学号</label>
+              <input id="student-id" name="student_id" autocomplete="off" autocapitalize="none" spellcheck="false" minlength="3" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9\-]{2,31}" placeholder="你的学号" required>
+            </div>
             <div class="field" id="email-field">
               <label for="email">邮箱</label>
               <div class="email-input">
@@ -129,7 +133,7 @@
           <div class="profile-actions"><button class="primary" type="submit"><i data-lucide="check" aria-hidden="true"></i><span>保存资料</span></button><button id="profile-cancel" class="secondary" type="button">取消</button></div>
         </form>
         <form id="student-form">
-          <div class="field"><label for="profile-student">学号 <span class="optional-label">（可选）</span></label><input id="profile-student" autocomplete="off" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9\-]{2,31}" placeholder="3 至 32 位字母、数字或连字符" disabled></div>
+          <div class="field"><label for="profile-student">学号</label><input id="profile-student" autocomplete="off" minlength="3" maxlength="32" pattern="[A-Za-z0-9][A-Za-z0-9\-]{2,31}" placeholder="3 至 32 位字母、数字或连字符" required disabled></div>
           <button id="student-save" class="secondary" type="submit" disabled><i data-lucide="check"></i><span>保存学号</span></button>
           <p id="student-status" class="status" role="status" hidden></p>
           <p id="student-error" class="error" role="alert" hidden></p>

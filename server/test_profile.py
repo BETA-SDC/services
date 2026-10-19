@@ -88,7 +88,7 @@ class ProfileTests(unittest.TestCase):
         self.login("student@westlake.edu.cn")
         user = self.store.find_account("student@westlake.edu.cn")
         with self.app.app_context(), self.store.connection() as connection:
-            connection.execute("INSERT INTO private_fields VALUES(?,?,?,?)",
+            connection.execute("INSERT OR REPLACE INTO private_fields VALUES(?,?,?,?)",
                                (user["id"], "student_id", encrypt(user["id"], "student_id", "S20260001"), 1))
             connection.execute("INSERT INTO private_fields VALUES(?,?,?,?)",
                                (user["id"], "phone", encrypt(user["id"], "phone", "13800138000"), 1))
@@ -105,10 +105,13 @@ class ProfileTests(unittest.TestCase):
             encrypted = connection.execute("SELECT ciphertext FROM private_fields WHERE field='student_id'").fetchone()[0]
             self.assertNotIn("S20260002", encrypted)
             self.assertEqual(connection.execute("SELECT count(*) FROM second_factor_proofs").fetchone()[0], 0)
-        self.assertEqual(self.client.put(endpoint, headers=self.headers, json={"student_id": ""}).json,
-                         {"student_id": None})
+        for value in ("", None, "   "):
+            self.assertEqual(self.client.put(endpoint, headers=self.headers,
+                                            json={"student_id": value}).status_code, 422)
+        self.assertEqual(self.client.get(endpoint, headers=self.headers).json, {"student_id": "S20260002"})
         with self.store.connection() as connection:
-            self.assertEqual(connection.execute("SELECT field FROM private_fields").fetchall(), [("phone",)])
+            self.assertEqual({row[0] for row in connection.execute("SELECT field FROM private_fields")},
+                             {"phone", "student_id"})
         self.store.add("another-student", "another-student@westlake.edu.cn")
         with self.client.session_transaction(base_url="https://" + self.headers["Host"]) as session:
             session["auth_token"] = self.store.create_session(2, 3600)
@@ -126,7 +129,8 @@ class ProfileTests(unittest.TestCase):
             with self.assertRaises(InvalidRegistration):
                 validate_profile("杨轩", nickname)
         self.assertEqual(validate_profile(" 杨轩 ", "  个性昵称  "), ("杨轩", "个性昵称"))
-        result = validate_registration({"real_name": "杨轩", "email": "name@westlake.edu.cn"})
+        result = validate_registration({"real_name": "杨轩", "email": "name@westlake.edu.cn",
+                                        "student_id": "S20260001"})
         self.assertTrue(result.username.startswith("u_"))
 
     def test_migration_preserves_old_login_and_does_not_guess_real_names(self):

@@ -43,6 +43,7 @@ export function setMode(
   for (const id of [
     "real-name",
     "nickname",
+    "student-id",
     "email",
     "email-code",
     "confirm",

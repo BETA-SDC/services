@@ -10,4 +10,4 @@ def signup_payload(client, headers, store, payload):
                                      (store.token_hash(challenge),)).fetchone()
             if row:
                 code = row[0]
-    return dict({"real_name": "测试成员"}, **payload, email_code=code)
+    return dict({"real_name": "测试成员", "student_id": "S20260001"}, **payload, email_code=code)

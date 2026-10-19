@@ -117,7 +117,9 @@ with a shared desktop sidebar/mobile top navigation.
   Student IDs remain encrypted and self-only in ordinary profile settings.
   Prefill never submits the form.
 - `/api/profile/student-id` reads/updates only the authenticated user's
-  optional student ID without step-up. Updates require CSRF, validate syntax,
+  student ID without step-up. New registrations require a student ID, saved
+  atomically with the account. Updates cannot clear it. Existing accounts
+  without one can still log in and add it. Updates require CSRF, validate syntax,
   revoke outstanding profile/prefill grants and never expose phone/documents.
   Existing encrypted student IDs are reused without a storage migration.
 - Export requires an explicitly export-enabled PAT, admin status and a fresh

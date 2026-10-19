@@ -8,7 +8,8 @@ from flask import Blueprint, current_app, jsonify, request, session
 
 from .auth import current_account
 from .repository import RegistrationAlreadyExists, RegistrationLimitReached
-from .validation import InvalidRegistration, validate_registration
+from .validation import InvalidRegistration, validate_email
+from .privacy.crypto import encrypt
 from .verification import json_body
 
 signup = Blueprint("signup", __name__)
@@ -26,9 +27,7 @@ def code_digest(challenge, email, code):
 def send_code():
     payload = json_body()
     try:
-        email = validate_registration({
-            "username": "email_check", "email": (payload or {}).get("email"),
-        }).email
+        email = validate_email((payload or {}).get("email"))
     except InvalidRegistration as error:
         return jsonify(error=str(error)), error.status
     if current_account():
@@ -101,8 +100,10 @@ def create_verified_account(store, registration, password_hash, code):
                  registration.real_name, registration.nickname),
             )
             from .site_accounts.schema import initialize_profile
-            initialize_profile(connection, connection.execute("SELECT last_insert_rowid()").fetchone()[0],
-                               registration.username)
+            user_id = connection.execute("SELECT last_insert_rowid()").fetchone()[0]
+            initialize_profile(connection, user_id, registration.username)
+            connection.execute("INSERT INTO private_fields VALUES(?,?,?,?)",
+                               (user_id, "student_id", encrypt(user_id, "student_id", registration.student_id), now))
             connection.execute("DELETE FROM signup_challenges WHERE challenge_hash=?", (digest,))
             connection.execute("DELETE FROM signup_mail_outbox WHERE challenge_hash=?", (digest,))
     if valid:

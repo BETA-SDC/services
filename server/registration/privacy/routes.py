@@ -69,6 +69,8 @@ def use_private(operation):
         if operation == "edit":
             try:
                 values = validate_private(payload.get("values"))
+                if "student_id" in values and values["student_id"] is None:
+                    raise InvalidRegistration("学号为必填资料，不能清空。")
                 if set(values) != set(fields):
                     raise InvalidRegistration("提交的资料与本次同意的范围不一致。")
             except InvalidRegistration as error:
@@ -88,6 +90,8 @@ def use_private(operation):
                 if field in fields:
                     result[field] = decrypt(user["id"], field, ciphertext)
         if operation == "delete":
+            if "student_id" in fields:
+                return jsonify(error="学号为必填资料，不能删除。"), 422
             for field in fields:
                 connection.execute("DELETE FROM private_fields WHERE user_id=? AND field=?", (user["id"], field))
         # Mutations invalidate any outstanding grants, including grants from other sessions.

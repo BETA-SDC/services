@@ -22,7 +22,7 @@ class SignupTests(unittest.TestCase):
         }
         self.headers["X-CSRF-Token"] = self.client.get("/api/session", headers=self.headers).json["csrf_token"]
         self.payload = {"username": "new_signup", "real_name": "测试成员", "email": "signup@westlake.edu.cn",
-                        "password": "Signup-test-long-phrase"}
+                        "password": "Signup-test-long-phrase", "student_id": "S20260001"}
 
     def tearDown(self):
         self.temp.cleanup()
@@ -59,6 +59,39 @@ class SignupTests(unittest.TestCase):
         with self.store.connection() as connection:
             self.assertEqual(connection.execute("SELECT attempts FROM signup_challenges").fetchone()[0], 5)
         self.assertIsNone(self.store.find_account("new_signup"))
+
+    def test_student_id_is_required_before_code_consumption_and_saved_atomically(self):
+        from server.registration.privacy.crypto import decrypt
+        code = self.code()
+        for value in (None, "", "   ", 123456, [], {}, "AB", "-123", "A" * 33, "S 123"):
+            response = self.post("register", dict(self.payload, student_id=value, email_code=code))
+            self.assertEqual(response.status_code, 422, (value, response.json))
+        missing = dict(self.payload, email_code=code)
+        missing.pop("student_id")
+        self.assertEqual(self.post("register", missing).status_code, 422)
+        with self.store.connection() as connection:
+            self.assertEqual(connection.execute("SELECT attempts FROM signup_challenges").fetchone()[0], 0)
+            self.assertEqual(connection.execute("SELECT count(*) FROM registrations").fetchone()[0], 0)
+        response = self.post("register", dict(self.payload, student_id="  S20260001  ", email_code=code))
+        self.assertEqual(response.status_code, 201)
+        with self.app.app_context(), self.store.connection() as connection:
+            user_id, ciphertext = connection.execute(
+                "SELECT user_id,ciphertext FROM private_fields WHERE field='student_id'").fetchone()
+            self.assertEqual(decrypt(user_id, "student_id", ciphertext), "S20260001")
+            self.assertNotIn("S20260001", ciphertext)
+
+    def test_student_storage_failure_rolls_back_account_profile_and_challenge(self):
+        code = self.code()
+        with self.store.connection() as connection:
+            connection.execute("CREATE TRIGGER reject_student BEFORE INSERT ON private_fields "
+                               "BEGIN SELECT RAISE(ABORT,'synthetic write failure'); END")
+        self.assertEqual(self.post("register", dict(self.payload, email_code=code)).status_code, 503)
+        with self.store.connection() as connection:
+            for table in ("registrations", "public_profiles", "profile_aliases", "private_fields"):
+                self.assertEqual(connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0], 0)
+            self.assertEqual(connection.execute("SELECT attempts FROM signup_challenges").fetchone()[0], 0)
+            connection.execute("DROP TRIGGER reject_student")
+        self.assertEqual(self.post("register", dict(self.payload, email_code=code)).status_code, 201)
 
     def test_expiry_email_mismatch_session_binding_and_cooldown(self):
         code = self.code()

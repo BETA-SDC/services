@@ -141,15 +141,25 @@ class PrivateTests(unittest.TestCase):
         self.assertEqual(self.post("/api/private/authorize", self.context("edit")).status_code, 401)
 
     def test_delete_clears_field_and_revokes_unused_grants(self):
-        self.save({"student_id": "S123456"})
-        old = self.grant()
-        token = self.grant("delete")
+        self.save({"phone": "13800138000"})
+        old = self.grant(fields=["phone"])
+        token = self.grant("delete", ["phone"])
         self.assertEqual(self.post("/api/private/delete", {"token": token}).status_code, 200)
         self.assertEqual(self.post("/api/private/read", {"token": old}).status_code, 409)
         self.assertEqual(self.client.get("/api/private", headers=self.headers).json["fields"], {})
         self.assertEqual(self.save({"phone": "13800138000"}).status_code, 200)
         self.assertEqual(self.save({"phone": ""}).status_code, 200)
         self.assertEqual(self.client.get("/api/private", headers=self.headers).json["fields"], {})
+
+    def test_legacy_private_api_cannot_clear_or_delete_required_student_id(self):
+        self.assertEqual(self.save({"student_id": "S123456"}).status_code, 200)
+        for value in ("", None):
+            self.assertEqual(self.save({"student_id": value}).status_code, 422)
+        token = self.grant("delete")
+        self.assertEqual(self.post("/api/private/delete", {"token": token}).status_code, 422)
+        token = self.grant()
+        self.assertEqual(self.post("/api/private/read", {"token": token}).json["values"],
+                         {"student_id": "S123456"})
 
     def test_key_missing_or_permissions_fail_closed(self):
         self.save({"student_id": "S123456"})

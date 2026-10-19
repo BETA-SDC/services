@@ -199,9 +199,7 @@ $("#student-form").addEventListener("submit", async (event) => {
     );
     if (version !== model.studentVersion || !model.currentUser) return;
     $("#profile-student").value = result.student_id || "";
-    $("#student-status").textContent = result.student_id
-      ? "学号已保存。"
-      : "学号已清除。";
+    $("#student-status").textContent = "学号已保存。";
     $("#student-status").hidden = false;
   } catch (error) {
     if (version === model.studentVersion)

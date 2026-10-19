@@ -106,6 +106,7 @@ form.addEventListener("submit", async (event) => {
       const account = await api("/api/register", {
         real_name: $("#real-name").value.trim(),
         nickname: $("#nickname").value.trim(),
+        student_id: $("#student-id").value.trim(),
         email: $("#email").value.trim() + emailDomain,
         password,
         email_code: $("#email-code").value.trim(),

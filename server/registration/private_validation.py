@@ -2,7 +2,7 @@
 from datetime import date
 import re
 
-from .validation import InvalidRegistration
+from .validation import InvalidRegistration, validate_student_id
 
 DOCUMENTS = {
     "cn_id": "中国大陆居民身份证",
@@ -98,10 +98,7 @@ def validate_private(payload):
         elif not isinstance(value, str):
             invalid("资料格式无效。")
         elif field == "student_id":
-            value = value.strip()
-            if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{2,31}", value):
-                invalid("学号应为 3 至 32 位字母、数字或连字符；不代表已通过学校核验。")
-            result[field] = value
+            result[field] = validate_student_id(value)
         else:
             value = value.strip()
             if not re.fullmatch(r"1[3-9][0-9]{9}", value):

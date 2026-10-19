@@ -22,6 +22,7 @@ class InvalidRegistration(ValueError):
 class RegistrationInput:
     username: str
     email: str
+    student_id: str
     real_name: str = ""
     nickname: str = ""
 
@@ -41,6 +42,30 @@ def validate_profile(real_name, nickname=""):
     return " ".join(real_name.split()), nickname.strip()
 
 
+def validate_student_id(value):
+    if not isinstance(value, str) or not value.strip():
+        raise InvalidRegistration("请填写学号。")
+    value = value.strip()
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{2,31}", value):
+        raise InvalidRegistration("学号应为 3 至 32 位字母、数字或连字符；不代表已通过学校核验。")
+    return value
+
+
+def validate_email(email):
+    if not isinstance(email, str):
+        raise InvalidRegistration("请填写有效的邮箱地址。", 400)
+    email = email.strip().lower()
+    if (len(email) > 254 or not EMAIL.fullmatch(email)
+            or ".." in email.split("@")[0]):
+        raise InvalidRegistration("请填写有效的邮箱地址。")
+    local, domain = email.rsplit("@", 1)
+    if len(local) > 64 or local.startswith(".") or local.endswith("."):
+        raise InvalidRegistration("请填写有效的邮箱地址。")
+    if domain != EMAIL_DOMAIN:
+        raise InvalidRegistration("仅允许使用 @westlake.edu.cn 邮箱注册。")
+    return email
+
+
 def validate_registration(payload):
     if not isinstance(payload, dict):
         raise InvalidRegistration("请填写用户名和邮箱。", 400)
@@ -52,15 +77,8 @@ def validate_registration(payload):
             username = "u_" + secrets.token_hex(10)
     if not isinstance(username, str) or not isinstance(email, str):
         raise InvalidRegistration("请填写用户名和邮箱。", 400)
-    username, email = username.strip(), email.strip().lower()
+    username = username.strip()
     if not USERNAME.fullmatch(username):
         raise InvalidRegistration("用户名格式无效。")
-    if (len(email) > 254 or not EMAIL.fullmatch(email)
-            or ".." in email.split("@")[0]):
-        raise InvalidRegistration("请填写有效的邮箱地址。")
-    local, domain = email.rsplit("@", 1)
-    if len(local) > 64 or local.startswith(".") or local.endswith("."):
-        raise InvalidRegistration("请填写有效的邮箱地址。")
-    if domain != EMAIL_DOMAIN:
-        raise InvalidRegistration("仅允许使用 @westlake.edu.cn 邮箱注册。")
-    return RegistrationInput(username, email, real_name, nickname)
+    return RegistrationInput(username, validate_email(email),
+                             validate_student_id(payload.get("student_id")), real_name, nickname)

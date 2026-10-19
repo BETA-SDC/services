@@ -4,7 +4,7 @@ import time
 from flask import Blueprint, current_app, jsonify, request, session
 
 from .auth import current_account
-from .validation import InvalidRegistration, validate_profile
+from .validation import InvalidRegistration, validate_profile, validate_student_id
 
 profile = Blueprint("profile", __name__)
 
@@ -14,7 +14,6 @@ def student_id():
     from .privacy.identity import actor
     from .privacy.consent import audit
     from .privacy.crypto import decrypt, encrypt
-    from .private_validation import validate_private
     user = actor()
     if not user:
         return jsonify(error="请先登录。"), 401
@@ -27,7 +26,7 @@ def student_id():
         if not isinstance(payload, dict) or set(payload) != {"student_id"}:
             return jsonify(error="参数无效。"), 422
         try:
-            value = validate_private(payload)["student_id"]
+            value = validate_student_id(payload["student_id"])
         except InvalidRegistration as error:
             return jsonify(error=str(error)), 422
         if not store.allow_auth_attempt(request.remote_addr, user["username"], action="student-id"):
@@ -35,13 +34,10 @@ def student_id():
     with store.connection() as connection:
         if request.method == "PUT":
             connection.execute("BEGIN IMMEDIATE")
-            if value is None:
-                connection.execute("DELETE FROM private_fields WHERE user_id=? AND field='student_id'", (user["id"],))
-            else:
-                connection.execute(
-                    "INSERT INTO private_fields VALUES(?,?,?,?) ON CONFLICT(user_id,field) "
-                    "DO UPDATE SET ciphertext=excluded.ciphertext,updated_at=excluded.updated_at",
-                    (user["id"], "student_id", encrypt(user["id"], "student_id", value), int(time.time())))
+            connection.execute(
+                "INSERT INTO private_fields VALUES(?,?,?,?) ON CONFLICT(user_id,field) "
+                "DO UPDATE SET ciphertext=excluded.ciphertext,updated_at=excluded.updated_at",
+                (user["id"], "student_id", encrypt(user["id"], "student_id", value), int(time.time())))
             for table in ("private_consents", "checkin_grants"):
                 connection.execute(f"UPDATE {table} SET consumed_at=? WHERE user_id=? AND consumed_at IS NULL",
                                    (int(time.time()), user["id"]))

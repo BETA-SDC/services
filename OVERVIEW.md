@@ -121,7 +121,7 @@ GitHub owner 的管理员认证有有效期，不能因为曾是 owner 就永久
 `checkin_grants`、`checkin_options`、`checkin_pages`、`checkin_deletion_requests`、
 `checkin_access_requests`、`checkin_access_grants` 和加密的 `system_mail_outbox` 表。
 
-学号按一般个人资料管理，本人登录后可在个人资料中查看和修改，无需二次验证，但不公开展示。
+学号为新注册必填的一般个人资料，注册时与账户在同一事务中加密保存；本人登录后可在个人资料中查看和修改，但不能清空或单独删除，无需二次验证，不公开展示。旧账号缺少学号仍可登录并自行补充，不自动填造历史数据。
 手机号和证件属于单独保护的私密资料。学号、签到答案和二维码链接密钥仍加密保存。
 学号复用原有按字段加密存储，无需搬迁历史记录；更新学号会使已有快捷填充授权失效。
 现有私密资料密钥位于 `/var/lib/betasdc/registrations.private-key`；
