@@ -100,7 +100,7 @@ def create_verified_account(store, registration, password_hash, code):
                 (registration.username, registration.email, password_hash, now,
                  registration.real_name, registration.nickname),
             )
-            from .sites import initialize_profile
+            from .site_accounts.schema import initialize_profile
             initialize_profile(connection, connection.execute("SELECT last_insert_rowid()").fetchone()[0],
                                registration.username)
             connection.execute("DELETE FROM signup_challenges WHERE challenge_hash=?", (digest,))

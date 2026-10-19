@@ -63,8 +63,8 @@ Linux 主机：`550c.duckdns.org`，管理用户 `jet`，本机 SSH 别名 `beta
 本机用于编辑和测试；只有部署后的 `/opt` 文件参与线上运行。
 执行命令时必须明确工作目录及主机，不能把本机成功当成服务器上线成功。
 
-账户项目目前不在 Git 仓库内，修改不能提交或推送。日历项目属于
-`BETA-SDC/calendar` Git 仓库，修改应测试、提交并推送；GitHub Pages 构建和 Linux
+账户项目已建立本地 Git 仓库，分支为 `main`，尚未配置远程仓库，修改测试后在本地提交。
+日历项目属于 `BETA-SDC/calendar` Git 仓库，修改应测试、提交并推送；GitHub Pages 构建和 Linux
 应用代码部署不是同一件事，推送不能自动证明后端已更新。
 
 ## 4. 技术结构
@@ -73,15 +73,26 @@ Linux 主机：`550c.duckdns.org`，管理用户 `jet`，本机 SSH 别名 `beta
 `/run/betasdc/backend.sock`。Gunicorn 以低权限用户 `betasdc` 运行，不直接绑定低端口。
 共享入口 `calendar_service.beta_entry:create_app()` 按明确的域名分派 Flask 应用。
 
-账户后端模块：
+本地源码的账户后端模块（本轮整体重构尚未部署）：
 
 - `auth`、`signup`、`verification`：密码会话、注册时邮箱验证。
-- `github`、`permissions`：GitHub 绑定、组织和 Team 同步、管理员认证。
-- `profile`、`sites`：公开资料、地址申请、跨站 SSO、颜色偏好。
-- `private_data`、`private_validation`：隐私信息加密、单次授权、格式校验。
-- `passkeys`、`second_factor`：通行密钥与邮箱二次验证。
-- `checkin`：活动、二维码、同意、签到记录、日历关联和导出。
-- `repository`、`security`：SQLite 数据访问和统一请求保护。
+- `github`、`access_control/`：GitHub 绑定、组织和 Team 同步、管理员认证与分组管理。
+- `profile`、`site_accounts/`：公开资料、地址申请、跨站 SSO、颜色偏好和共享页面。
+- `privacy/`、`private_validation`：隐私信息加密、单次授权、会话校验和格式校验。
+- `webauthn/`、`second_factor`：通行密钥协议、登录、注册密钥与邮箱二次验证。
+- `checkins/`：活动、二维码、同意、签到记录、日历关联、审核与导出。
+- `repository`、`storage/`、`security`：SQLite 连接、初始化、会话、限流和统一请求保护。
+- `features`、`assets`：统一功能装配和前端模块白名单。
+- `server/mailer/`：邮件模板、TLS 传输、独立队列及重试。
+
+旧 `permissions`、`sites`、`private_data`、`passkeys`、`checkin` 等入口保留兼容导入。
+账户前端由 `campus-register/account/` 明确分模块；账户、管理与签到共用
+`shared/http.js`，不再依赖账户页面三个脚本共享隐式全局变量。
+管理员列表把逐用户读取角色、分组改为每页两次批量查询；会话响应在同一次请求中
+复用已验证身份，但不跨请求缓存权限。
+完整设计见 `server/ARCHITECTURE.md`。当前完整发布入口为
+`server/deploy-service-upgrade.sh`，清单由 `server/release_manifest.py` 生成并检查。
+本轮不修改端口、Nginx、证书或线上数据；旧 Mac 安装脚本和首次安装脚本不是本轮发布入口。
 
 邮件由独立工作进程通过 163 SMTP 发送，发件显示名称为 BETA SDC Service；
 GitHub 授权由独立 broker 处理。凭据不得写入前端、文档、代码仓库或普通日志。

@@ -2,14 +2,86 @@
 
 ## Scope
 
-This service remains a Flask modular monolith. This refactor changes attendance
-code organization, not public URLs, database schemas, encryption formats, consent
-versions or permission rules. It does not migrate production data or change
+This service remains a Flask modular monolith. The architecture now covers the
+whole account service: registration/login, GitHub binding, groups and roles,
+profiles, preferences, cross-site sessions, 2FA, passkeys, private information,
+attendance and mail delivery. This changes organization, not public URLs, schema
+version, encryption formats, consent versions or permission rules. It does not
+migrate production data or change
 listeners, Nginx, firewall rules or background services.
 
 `server/webapp.py` and `registration.create_app` remain the entry points.
 `registration/checkin.py` and `registration/checkin_access.py` are compatibility
 facades for the factory, tests and maintenance jobs, not implementation modules.
+The same compatibility rule applies to `permissions.py`, `private_data.py`,
+`passkeys.py`, `sites.py` and `server/mail_worker.py`.
+
+## Account backend
+
+`registration/features.py` is the ordered HTTP feature registry.
+The factory owns configuration, dependency setup, security middleware and
+registration. It does not own feature implementation. Registration, password
+login, email verification, profile updates and email 2FA retain their existing
+small controllers; they are not split into artificial per-function files.
+
+| Package | Responsibility |
+| --- | --- |
+| `registration/access_control/` | Schema, roles/policy, GitHub organization/team snapshots, administration and batched directory reads |
+| `registration/privacy/` | Schema, AES-GCM encryption, self identity/session checks, single-use consent and HTTP endpoints |
+| `registration/site_accounts/` | Host/redirect policy, profile storage, preferences, one-use SSO, public profiles and shared shell |
+| `registration/webauthn/` | RP/origin/user-handle protocol, authenticated enrollment/step-up, discoverable login |
+| `registration/storage/` | Transactional initialization, revocable parent/child sessions and atomic authentication attempt limits |
+| `mailer/` | Sender configuration, message templates, verified-TLS SMTP transport, queue-specific delivery and batch orchestration |
+
+`RegistrationStore` remains the persistence API. Its two internal operation
+mixins use the same `connection()` owner; they do not override one another or
+open additional databases. Schema initialization remains one atomic, idempotent
+transaction at version 11. There is no new migration framework or data rewrite.
+Keep encryption keys, session signatures, SSO parent binding, CSRF checks,
+single-use grants and rate limits intact when adding features.
+
+The administrator directory loads ownership and memberships in two bounded
+queries per page instead of two queries per returned user (up to 100 previously).
+The rest of the directory queries are unchanged. Authorization is still checked
+on each request and again inside write transactions; no cross-request identity
+or role cache is introduced.
+
+## Account frontend
+
+`main.js` now loads `account/bootstrap.js` as an ES module. The account page
+does not depend on three scripts sharing undeclared global bindings.
+
+| Module under `campus-register/account/` | Responsibility |
+| --- | --- |
+| `context.js` | Explicit in-memory state, DOM references, labels and private-template mounting |
+| `client.js`, `ui.js` | Account CSRF rotation/recovery and small rendering/error helpers |
+| `views.js`, `auth-events.js`, `signup.js` | Login/registration/legacy verification views, authentication handlers and code cooldown |
+| `github.js` | Linked-account presentation and authorization |
+| `privacy.js`, `privacy-events.js` | Consent, reveal/edit/delete, passkey management and sensitive-data cleanup |
+| `webauthn.js`, `factor.js` | Credential serialization and email/passkey step-up |
+| `settings.js`, `settings-events.js` | Panel navigation and settings handlers |
+| `profile.js`, `preferences.js` | Public profile/student ID and account-wide color mode |
+| `bootstrap.js` | Handler installation before initial session loading |
+
+`shared/http.js` is used by account, administration and attendance. It keeps
+same-origin cookies, no-store requests, a 15-second timeout, JSON validation,
+header-only credentials and structured errors consistent. Account initialization
+reuses its fetched session response when rendering, avoiding another identical
+request. Only a `csrf_failed` error resets the account CSRF state: an ordinary
+permission denial must not disable the whole login form.
+
+Account assets use an explicit `/account/<name>.js` allowlist; shared assets use
+`/shared/<name>.js`. Add entries in `registration/assets.py` when adding modules.
+The existing shared site shell and calendar application retain their current
+entry points; calendar-specific rendering and its external repository are not
+rewritten here.
+
+## Mail worker
+
+The standalone `server/mail_worker.py` still loads systemd credentials and owns
+the process lock. Mail templates and SMTP transport are reusable, but queue
+handlers retain their individual live-recipient, session, grant, expiry,
+deduplication and retry checks. The web process still never sends SMTP directly.
 
 ## Attendance backend
 
@@ -89,11 +161,16 @@ From the project root, using a Python environment with the existing requirements
 
 ```sh
 python -B -m unittest discover -s server -t .
-node --test campus-register/tests/checkin-ui.test.mjs
+node --test 'campus-register/tests/*.test.mjs'
+python -B server/release_manifest.py
+sh -n server/deploy-service-upgrade.sh
 sh -n server/deploy-checkin-governance.sh
 ```
 
-`test_checkin_architecture.py` guards dependency boundaries, public imports,
+`test_service_architecture.py` additionally guards whole-service composition,
+compatibility imports, schema repeatability, account/shared asset routing,
+acyclic feature/frontend dependencies, bounded directory queries and release
+coverage. `test_checkin_architecture.py` guards attendance boundaries, public imports,
 multi-app registration, frontend asset routing, release completeness,
 pagination and connection reuse. Existing end-to-end API tests cover permissions,
 PAT issuance/revocation, consent, prefill and deduplication.
@@ -103,12 +180,16 @@ Never create synthetic attendance records in production.
 
 ## Release
 
-`server/checkin-release.json` is the release file manifest consumed by
-`deploy-checkin-governance.sh`. Add every new backend module and frontend module
-to it. For frontend modules, also update the allowlist in `checkins/pages.py`.
-The architecture tests verify these stay aligned.
+`server/service-release.json` is the complete account release manifest.
+`checkin-release.json` is a generated compatibility copy, not a partial release.
+Regenerate both with `python -B server/release_manifest.py --write`; the command
+without `--write` checks for drift. Do not put credentials, databases, encryption
+keys, dependency caches or local macOS background-item definitions in a release.
+For attendance frontend modules, also update `checkins/pages.py`.
 
-The deployment script validates staged files before service changes, creates
+Use `server/deploy-service-upgrade.sh`. Its historical implementation entry
+`deploy-checkin-governance.sh` now consumes the full manifest and runs the entire
+server test suite. It validates staged files before service changes, creates
 nested module directories, backs up installed files and the database, runs
 server-side preflight tests, and retains its existing code-rollback behavior.
 Do not run historical upgrade scripts as the current release procedure.
@@ -117,6 +198,6 @@ The source is tracked in a local Git repository on `main`; no remote is configur
 Credentials, runtime data and dependency caches are excluded by `.gitignore`.
 This refactor does not establish database migrations.
 The surrounding legacy macOS installers, shared calendar Python runtime and
-non-attendance modules are intentionally unchanged. Future architecture work
-should address version control, reproducible dependency ownership, migrations,
+calendar-specific implementation are intentionally unchanged. Future work
+should address reproducible dependency ownership, versioned migrations,
 restore drills and measured load testing separately.

@@ -7,7 +7,7 @@ import time
 
 from flask import abort, current_app, session
 
-from ..permissions import is_admin
+from ..access_control.policy import is_admin
 from .permissions import organizer
 
 

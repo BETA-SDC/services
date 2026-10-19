@@ -7,8 +7,10 @@ import time
 
 from flask import Response, abort, jsonify, request
 
-from ..permissions import is_admin
-from ..private_data import actor, audit, encrypt
+from ..access_control.policy import is_admin
+from ..privacy.identity import actor
+from ..privacy.consent import audit
+from ..privacy.crypto import encrypt
 from .calendar import calendar_events, calendar_events_on_day
 from .deletion import delete_event
 from .domain import LEGACY_RETAIN_FOREVER, ZONE, page_slug

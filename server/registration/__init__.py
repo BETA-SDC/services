@@ -11,21 +11,13 @@ from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import DEFAULTS
-from .auth import auth, configure_auth
+from .auth import configure_auth
 from .repository import RegistrationStore
-from .routes import api, pages
 from .security import install_security
-from .verification import verification
-from .signup import signup
-from .github import github, configure_github
-from .permissions import admin
-from .profile import profile
-from .private_data import private, configure_private
-from .passkeys import passkeys
-from .second_factor import second_factor
-from .sites import sites, configure_site_pages, install_site_shell
-from .checkin import checkin
-from .checkin_access import access as checkin_access
+from .github import configure_github
+from .privacy.crypto import configure_private
+from .site_accounts.shell import configure_site_pages, install_site_shell
+from .features import register_features
 
 
 def create_app(database=None, networks=None, max_records=1000, *, config=None):
@@ -50,20 +42,7 @@ def create_app(database=None, networks=None, max_records=1000, *, config=None):
     # Only the protected Nginx socket may supply these two proxy headers.
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
     install_security(app)
-    app.register_blueprint(pages)
-    app.register_blueprint(api, url_prefix="/api")
-    app.register_blueprint(auth, url_prefix="/api")
-    app.register_blueprint(verification, url_prefix="/api")
-    app.register_blueprint(signup, url_prefix="/api")
-    app.register_blueprint(github, url_prefix="/api")
-    app.register_blueprint(admin, url_prefix="/api")
-    app.register_blueprint(profile, url_prefix="/api")
-    app.register_blueprint(private, url_prefix="/api")
-    app.register_blueprint(passkeys, url_prefix="/api")
-    app.register_blueprint(second_factor, url_prefix="/api")
-    app.register_blueprint(sites)
-    app.register_blueprint(checkin)
-    app.register_blueprint(checkin_access)
+    register_features(app)
     configure_site_pages(app)
     install_site_shell(app)
     return app

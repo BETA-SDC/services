@@ -6,8 +6,9 @@ import json
 
 from flask import Response, jsonify, request
 
-from ..permissions import is_admin
-from ..private_data import audit, decrypt
+from ..access_control.policy import is_admin
+from ..privacy.consent import audit
+from ..privacy.crypto import decrypt
 from .domain import BASIC_FIELDS, FIELDS, POLICY, ZONE, csv_safe, format_answer
 from .grants import authorized_records
 from .http import checkin, page_number

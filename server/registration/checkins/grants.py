@@ -7,7 +7,7 @@ import time
 
 from flask import abort, jsonify, request
 
-from ..permissions import is_admin
+from ..access_control.policy import is_admin
 from .domain import PAT_PATTERN, ZONE
 from .notifications import notify
 from .permissions import account, require_factor

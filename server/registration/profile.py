@@ -11,7 +11,9 @@ profile = Blueprint("profile", __name__)
 
 @profile.route("/profile/student-id", methods=["GET", "PUT"])
 def student_id():
-    from .private_data import actor, audit, decrypt, encrypt
+    from .privacy.identity import actor
+    from .privacy.consent import audit
+    from .privacy.crypto import decrypt, encrypt
     from .private_validation import validate_private
     user = actor()
     if not user:

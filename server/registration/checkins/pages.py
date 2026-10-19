@@ -4,8 +4,9 @@ import sqlite3
 from flask import abort, jsonify, request
 
 from ..auth import csrf_token
-from ..permissions import is_admin
-from ..private_data import actor, audit
+from ..access_control.policy import is_admin
+from ..privacy.identity import actor
+from ..privacy.consent import audit
 from ..private_validation import DOCUMENTS
 from ..routes import asset
 from .domain import FIELDS, POLICY

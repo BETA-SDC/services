@@ -66,7 +66,7 @@ def default_avatar():
 
 @pages.get("/admin")
 def administration():
-    from .permissions import require_admin
+    from .access_control.policy import require_admin
     return require_admin(lambda actor: asset("admin.html"))()
 
 

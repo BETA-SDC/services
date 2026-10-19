@@ -3,8 +3,8 @@ import time
 
 from flask import abort, jsonify
 
-from ..permissions import is_admin
-from ..private_data import actor
+from ..access_control.policy import is_admin
+from ..privacy.identity import actor
 
 
 def member(connection, user):

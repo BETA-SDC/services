@@ -4,9 +4,10 @@ import sqlite3
 
 from flask import abort
 
-from ..permissions import is_admin
-from ..private_data import actor, decrypt
-from ..sites import ACCOUNT_HOST
+from ..access_control.policy import is_admin
+from ..privacy.identity import actor
+from ..privacy.crypto import decrypt
+from ..site_accounts.domain import ACCOUNT_HOST
 from .domain import POLICY, status
 from .permissions import can_edit_page, eligible, member
 from .repository import event_options, page_options

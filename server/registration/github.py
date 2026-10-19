@@ -16,12 +16,14 @@ from flask import Blueprint, current_app, jsonify, redirect, request, session
 
 from .auth import current_account, establish_session
 from server.github_profile import public_profile
-from .permissions import audit, sync_memberships
+from .access_control.policy import audit
+from .access_control.sync import sync_memberships
 
 github = Blueprint("github", __name__)
 # Keep the registered OAuth callback as a compatibility bridge to the new host.
 CALLBACK = "https://register.betasdc.duckdns.org/api/github/callback"
 BROKER_SOCKET = "/run/betasdc-github/broker.sock"
+_CURRENT_ACCOUNT = object()
 
 
 def configure_github(app):
@@ -36,8 +38,9 @@ def configure_github(app):
         raise ValueError("Invalid GitHub client ID")
 
 
-def github_status():
-    account = current_account()
+def github_status(*, account=_CURRENT_ACCOUNT):
+    if account is _CURRENT_ACCOUNT:
+        account = current_account()
     linked = None
     if account:
         store = current_app.extensions["registration_store"]

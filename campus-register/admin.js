@@ -1,3 +1,5 @@
+import {requestJSON} from "./shared/http.js";
+
 const $ = (selector) => document.querySelector(selector);
 let csrf = "";
 let data = {users: [], groups: [], audit: [], page: 1, total: 0};
@@ -24,14 +26,8 @@ function message(text, error = false) {
   target.hidden = !text;
 }
 async function api(path, payload) {
-  const response = await fetch(path, {
-    method: payload === undefined ? "GET" : "POST", credentials: "same-origin",
-    headers: payload === undefined ? {} : {"Content-Type": "application/json", "X-CSRF-Token": csrf},
-    body: payload === undefined ? undefined : JSON.stringify(payload),
-    signal: AbortSignal.timeout(15000),
-  });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "请求失败");
+  const result = await requestJSON(path, {data: payload, csrf});
+  if (result.csrf_token) csrf = result.csrf_token;
   return result;
 }
 async function change(path, payload) {

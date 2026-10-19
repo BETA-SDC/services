@@ -3,7 +3,7 @@ import sqlite3
 
 from flask import abort, current_app
 
-from ..permissions import is_admin
+from ..access_control.policy import is_admin
 from server.system_mail import queue_message
 
 

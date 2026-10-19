@@ -33,7 +33,7 @@ def install_security(app):
             return jsonify(error="当前网络不允许访问。"), 403
         if request.host.lower() != domain or request.scheme != "https":
             return jsonify(error="访问地址无效。"), 403
-        from .sites import ACCOUNT_HOST, SITE_HOSTS
+        from .site_accounts.domain import ACCOUNT_HOST, SITE_HOSTS
         if domain in SITE_HOSTS:
             allowed_api = (request.path in ("/api/session", "/api/logout", "/api/site/session")
                            or request.path.startswith("/api/calendar/")
@@ -58,7 +58,7 @@ def install_security(app):
             supplied = request.headers.get("X-CSRF-Token", "")
             expected = session.get("csrf_token", "")
             if not expected or not secrets.compare_digest(supplied.encode(), expected.encode()):
-                return jsonify(error="页面会话已失效，请刷新后重试。"), 403
+                return jsonify(error="页面会话已失效，请刷新后重试。", code="csrf_failed"), 403
 
     @app.after_request
     def protect_response(response):

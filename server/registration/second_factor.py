@@ -6,7 +6,8 @@ import time
 
 from flask import Blueprint, current_app, jsonify, request
 
-from .private_data import actor, active_session, audit, session_hash
+from .privacy.identity import actor, active_session, session_hash
+from .privacy.consent import audit
 
 second_factor = Blueprint("second_factor", __name__)
 LIFETIME = 300

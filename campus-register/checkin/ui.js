@@ -1,4 +1,5 @@
 import {labels, model, requestStates, states} from "./context.js";
+import {requestJSON} from "../shared/http.js";
 
 export const $ = selector => document.querySelector(selector);
 
@@ -22,15 +23,8 @@ export function notice(selector, value = "") {
 }
 
 export async function api(path, data, method = "POST", headers = {}) {
-  const response = await fetch(path, {
-    credentials: "same-origin", cache: "no-store", signal: AbortSignal.timeout(15000),
-    headers: {...headers, ...(data !== undefined ? {"Content-Type": "application/json", "X-CSRF-Token": model.state?.csrf_token || ""} : {})},
-    ...(data !== undefined ? {method,
-      body: JSON.stringify(data)} : {}),
-  });
-  const result = await response.json();
-  if (!response.ok) throw Object.assign(new Error(result.error || "请求失败，请稍后重试。"), {code: result.code, status: response.status});
-  return result;
+  return requestJSON(path, {data, method: data === undefined ? "GET" : method,
+    csrf: model.state?.csrf_token || "", headers});
 }
 
 export async function busy(button, work, errorSelector = "#error") {

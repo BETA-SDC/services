@@ -4,8 +4,9 @@ import time
 
 from flask import abort, jsonify, request
 
-from ..permissions import is_admin
-from ..private_data import actor, audit
+from ..access_control.policy import is_admin
+from ..privacy.identity import actor
+from ..privacy.consent import audit
 from ..validation import InvalidRegistration
 from .grants import issue_pat
 from .http import access, page_number, payload

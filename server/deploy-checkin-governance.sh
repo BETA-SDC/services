@@ -1,5 +1,5 @@
 #!/bin/sh
-# Attendance governance only: no listener, network or unrelated service changes.
+# Full account release; historical entry point, with no listener/network changes.
 set -eu
 umask 077
 [ "$(id -u)" = 0 ] && [ "$(hostname)" = 550c ] || exit 1
@@ -7,7 +7,7 @@ SOURCE=${1:?Provide staged source}
 ROOT=/opt/betasdc
 PYTHON=/opt/betasdc-calendar/.venv/bin/python
 release_paths() {
-    "$PYTHON" -B - "$SOURCE/server/checkin-release.json" "$1" <<'PY'
+    "$PYTHON" -B - "$SOURCE/server/service-release.json" "$1" <<'PY'
 import json
 from pathlib import PurePosixPath
 import re
@@ -30,7 +30,7 @@ UNITS=$(release_paths units)
 for file in $FILES; do [ -f "$SOURCE/$file" ]; done
 for file in $ASSETS; do [ -f "$SOURCE/campus-register/$file" ]; done
 for unit in $UNITS; do [ -f "$SOURCE/server/$unit" ]; done
-BACKUP=$(mktemp -d /var/backups/betasdc/checkin-governance-XXXXXX)
+BACKUP=$(mktemp -d /var/backups/betasdc/account-upgrade-XXXXXX)
 backup() {
     mkdir -p "$BACKUP$(dirname "$1")"
     if [ -f "$1" ]; then cp -p "$1" "$BACKUP$1"
@@ -67,7 +67,7 @@ rollback() {
         systemctl daemon-reload
         systemctl restart betasdc.service
         if [ "$MAIL_TIMER_ACTIVE" = active ]; then systemctl start betasdc-mail.timer; fi
-        printf 'Governance upgrade rolled back code; timer stays disabled, database preserved. Backup: %s\n' "$BACKUP" >&2
+        printf 'Account upgrade rolled back code; cleanup stays disabled, database preserved. Backup: %s\n' "$BACKUP" >&2
     fi
 }
 trap rollback EXIT
@@ -90,14 +90,14 @@ done
 for unit in $UNITS; do install -o root -g root -m 644 "$SOURCE/server/$unit" "/etc/systemd/system/$unit"; done
 systemctl daemon-reload
 cd "$ROOT"
-runuser -u betasdc -g www-data -- "$PYTHON" -B -m unittest server.test_checkin server.test_checkin_access server.test_checkin_architecture server.test_profile server.test_sites server.test_network_policy server.test_verification server.test_second_factor server.test_signup
+runuser -u betasdc -g www-data -- "$PYTHON" -B -m unittest discover -s server -t .
 cd /opt/betasdc-calendar
 runuser -u betasdc -g www-data -- env CALENDAR_STATE=/var/lib/betasdc-calendar "$PYTHON" -B -c '
 import sys
 sys.path.insert(0,"/opt/betasdc")
 from calendar_service.beta_entry import create_app
 app=create_app()
-print("Shared app initialized; attendance governance schema ready")
+print("Shared account and calendar applications initialized")
 '
 systemctl kill --kill-who=main --signal=HUP betasdc.service
 if [ "$MAIL_TIMER_ACTIVE" = active ]; then systemctl start betasdc-mail.timer; fi
@@ -105,9 +105,14 @@ sleep 8
 systemctl is-active --quiet betasdc.service betasdc-nginx.service betasdc-calendar.service
 if systemctl is-active --quiet betasdc-checkin-cleanup.timer; then exit 1; fi
 if systemctl is-enabled --quiet betasdc-checkin-cleanup.timer; then exit 1; fi
+for path in /api/health /api/session /account/bootstrap.js /shared/http.js; do
+    curl --noproxy '*' --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 3 --max-time 15 -fsS \
+        --resolve account.betasdc.duckdns.org:443:10.16.125.52 \
+        "https://account.betasdc.duckdns.org$path" -o /dev/null
+done
 curl --noproxy '*' --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 3 --max-time 15 -fsS \
     --resolve account.betasdc.duckdns.org:443:10.16.125.52 \
     https://account.betasdc.duckdns.org/api/checkin/session |
     "$PYTHON" -c 'import json,sys; d=json.load(sys.stdin); assert d["policy"]=="checkin-2026-10-19-v5" and not d["can_manage"] and not d["can_create"]'
-printf 'Attendance governance deployed; no automatic deletion. Backup: %s\n' "$BACKUP"
+printf 'Account service deployed; no automatic attendance deletion. Backup: %s\n' "$BACKUP"
 trap - EXIT

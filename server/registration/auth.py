@@ -75,9 +75,10 @@ def establish_session(user_id):
 @auth.get("/session")
 def session_status():
     from .github import github_status
-    from .permissions import access_status
-    return jsonify(user=current_account(), csrf_token=csrf_token(), **github_status(),
-                   access=access_status())
+    from .access_control.policy import access_status
+    account = current_account()
+    return jsonify(user=account, csrf_token=csrf_token(), **github_status(account=account),
+                   access=access_status(current=account))
 
 
 @auth.post("/login")

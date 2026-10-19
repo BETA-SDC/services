@@ -4,7 +4,7 @@ import time
 
 from flask import abort, jsonify
 
-from ..private_data import audit
+from ..privacy.consent import audit
 from .grants import revoke_event_access
 from .http import checkin, page_number, payload
 from .notifications import notify, notify_admins

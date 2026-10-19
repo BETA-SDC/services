@@ -2,7 +2,7 @@
 from flask import Blueprint, abort, jsonify, request
 from werkzeug.exceptions import HTTPException
 
-from ..sites import ACCOUNT_HOST
+from ..site_accounts.domain import ACCOUNT_HOST
 from ..validation import InvalidRegistration
 from .repository import purge_expired, store
 
