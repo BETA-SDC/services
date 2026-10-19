@@ -1,0 +1,31 @@
+[Unit]
+Description=Deliver BETA verification and system notification messages
+After=network-online.target betasdc.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=betasdc
+Group=www-data
+WorkingDirectory=/opt/betasdc
+ExecStart=/opt/betasdc-calendar/.venv/bin/python -B /opt/betasdc/server/mail_worker.py
+LoadCredential=smtp-password:/etc/betasdc/smtp-password
+RuntimeDirectory=betasdc-mail
+RuntimeDirectoryMode=0700
+UMask=0077
+TimeoutStartSec=180
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+MemoryMax=96M
+TasksMax=16
+LimitNOFILE=128
+ReadWritePaths=/var/lib/betasdc /run/betasdc-mail

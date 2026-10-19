@@ -1,0 +1,36 @@
+(version 1)
+(allow default)
+
+; Targeted mitigation, not a complete sandbox. Default-deny Python startup
+; is incompatible with this Mac; test each restricted operation explicitly.
+(deny file-read-data file-write*
+    (regex #"^/Users/jietexue/[.]")
+    (subpath "/Users/jietexue/Documents")
+    (subpath "/Users/jietexue/Desktop")
+    (subpath "/Users/jietexue/Downloads")
+    (subpath "/Users/jietexue/Pictures")
+    (subpath "/Users/jietexue/Movies")
+    (subpath "/Users/jietexue/Music")
+    (subpath "/Users/jietexue/_projects")
+    (subpath "/Users/jietexue/Library/BetasdcACME")
+    (subpath "/Users/jietexue/Library/Application Support/DuckDNS")
+    (subpath "/Users/jietexue/Library/Keychains")
+    (subpath "/Users/jietexue/Library/Mail")
+    (subpath "/Users/jietexue/Library/Safari")
+    (subpath "/Users/jietexue/Library/Containers")
+    (subpath "/Users/jietexue/Library/Group Containers")
+    (subpath "/Users/jietexue/Library/LaunchAgents"))
+
+; Prevent modifying deployed code, policy, TLS material or Nginx bundle.
+(deny file-write*
+    (literal "/Users/jietexue/Library/Application Support/BetasdcDemo/app.py")
+    (literal "/Users/jietexue/Library/Application Support/BetasdcDemo/index.html")
+    (literal "/Users/jietexue/Library/Application Support/BetasdcDemo/styles.css")
+    (literal "/Users/jietexue/Library/Application Support/BetasdcDemo/main.js")
+    (literal "/Users/jietexue/Library/Application Support/BetasdcDemo/registration.sb")
+    (subpath "/Users/jietexue/Library/Application Support/BetasdcDemo/register-tls")
+    (subpath "/Users/jietexue/Library/Application Support/BetasdcDemo/tls")
+    (subpath "/Users/jietexue/Library/Application Support/BetasdcDemo/nginx"))
+(deny file-read-data
+    (subpath "/Users/jietexue/Library/Application Support/BetasdcDemo/tls"))
+(deny network-outbound)

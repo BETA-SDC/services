@@ -1,0 +1,11 @@
+[Unit]
+Description=Check BETA verification outbox
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=30s
+AccuracySec=5s
+Unit=betasdc-mail.service
+
+[Install]
+WantedBy=timers.target

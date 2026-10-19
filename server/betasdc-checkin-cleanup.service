@@ -1,0 +1,17 @@
+[Unit]
+Description=Legacy BETA check-in transient grant cleanup (not scheduled)
+
+[Service]
+Type=oneshot
+User=betasdc
+Group=www-data
+WorkingDirectory=/opt/betasdc
+ExecStart=/opt/betasdc-calendar/.venv/bin/python -B -m server.purge_checkins
+Environment=PYTHONPATH=/opt/betasdc
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/betasdc
+RestrictAddressFamilies=AF_UNIX

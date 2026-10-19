@@ -1,0 +1,23 @@
+[Unit]
+Description=Publish Betasdc server campus IPv4
+After=network-online.target
+Wants=network-online.target
+OnSuccess=betasdc-network.service
+
+[Service]
+Type=oneshot
+User=betasdc-acme
+Group=betasdc-acme
+Environment=DUCKDNS_TOKEN_FILE=/var/lib/betasdc-acme/duckdns.token
+Environment=DUCKDNS_EXPECTED_GATEWAY=10.16.127.254
+Environment=DUCKDNS_ADDRESS_PREFIX=10.16.
+ExecStart=/bin/sh /opt/betasdc/update-duckdns.sh
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+CapabilityBoundingSet=
+MemoryMax=64M
+TasksMax=16
+TimeoutStartSec=45

@@ -1,0 +1,4 @@
+cryptography==50.0.2
+fido2==2.2.1
+cffi==2.1.1
+pycparser==3.11

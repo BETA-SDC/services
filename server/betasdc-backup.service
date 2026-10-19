@@ -1,0 +1,19 @@
+[Unit]
+Description=Back up Betasdc registration database
+After=betasdc.service
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3 -I /usr/local/libexec/betasdc-backup.py
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ReadWritePaths=/var/backups/betasdc/database
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+RestrictAddressFamilies=AF_UNIX
+MemoryMax=64M
+TasksMax=8
+TimeoutStartSec=60

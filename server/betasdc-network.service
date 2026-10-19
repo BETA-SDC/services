@@ -1,0 +1,14 @@
+[Unit]
+Description=Follow verified Betasdc server campus DHCP address
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /usr/local/libexec/betasdc-refresh-network.py
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ReadWritePaths=/etc/betasdc /run
+MemoryMax=64M
+TasksMax=16

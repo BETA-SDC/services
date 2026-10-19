@@ -1,0 +1,36 @@
+[Unit]
+Description=Betasdc registration backend
+After=network.target
+
+[Service]
+User=betasdc
+Group=www-data
+WorkingDirectory=/opt/betasdc
+RuntimeDirectory=betasdc
+RuntimeDirectoryMode=0750
+StateDirectory=betasdc
+StateDirectoryMode=0700
+UMask=0007
+Environment=PYTHONDONTWRITEBYTECODE=1
+EnvironmentFile=-/etc/betasdc/github.env
+ExecStart=/usr/bin/gunicorn --bind unix:/run/betasdc/backend.sock --umask 7 --workers 2 --threads 2 --worker-class gthread --timeout 30 --graceful-timeout 10 --max-requests 1000 --max-requests-jitter 100 --limit-request-line 2048 --limit-request-fields 30 --limit-request-field_size 2048 --access-logfile /dev/null --error-logfile - server.webapp:create_app()
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX
+CapabilityBoundingSet=
+MemoryMax=256M
+TasksMax=32
+LimitNOFILE=256
+ReadWritePaths=/var/lib/betasdc /run/betasdc
+
+[Install]
+WantedBy=multi-user.target

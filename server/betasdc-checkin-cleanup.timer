@@ -1,0 +1,10 @@
+[Unit]
+Description=Legacy BETA check-in timer (keep disabled)
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=30m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

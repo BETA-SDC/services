@@ -1,0 +1,5 @@
+# Betasdc campus access: use TCP DNS for this domain only.
+domain betasdc.duckdns.org
+nameserver 1.1.1.1
+options usevc
+timeout 5

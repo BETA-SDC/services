@@ -1,0 +1,37 @@
+:root { --beta-surface: #f6f8fa; --beta-panel: #fff; --beta-ink: #24292f; --beta-line: #d0d7de; --beta-hover: #eaeef2; }
+body[data-theme="dark"] { --beta-surface: #20262b; --beta-panel: #20262b; --beta-ink: #e3e9ed; --beta-line: #39434b; --beta-hover: #303b43; }
+body[data-theme="dark"] button:not(.primary) { background: #20262b; color: #e3e9ed; border-color: #39434b; }
+body[data-theme="dark"] button:not(.primary):hover { background: #303b43; }
+body[data-theme="dark"] .segments button, body[data-theme="dark"] .beta-icon-button,
+body[data-theme="dark"] #beta-account-menu button { background: transparent; }
+.beta-header { height: 68px; min-height: 68px; flex-shrink: 0; width: 100%; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--beta-line); background: var(--beta-surface); color: var(--beta-ink); font: 14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; box-sizing: border-box; position: relative; z-index: 30; }
+.beta-header *, #beta-menu * { box-sizing: border-box; letter-spacing: 0; }
+.beta-header-left { display: flex; align-items: center; gap: 18px; min-width: 0; }
+.beta-brand { display: flex; align-items: center; }
+.beta-brand img { width: 112px; height: 39px; object-fit: contain; }
+.beta-icon-button { border: 1px solid var(--beta-line); border-radius: 6px; width: 34px; height: 34px; padding: 7px; background: transparent; color: inherit; display: grid; place-items: center; cursor: pointer; flex: 0 0 34px; }
+.beta-header svg, #beta-menu svg { width: 18px; height: 18px; flex-shrink: 0; }
+.beta-account { position: relative; min-width: 0; }
+#beta-account-button { border: 0; background: transparent; color: inherit; padding: 4px 0 4px 8px; display: flex; align-items: center; gap: 9px; font: inherit; cursor: pointer; min-height: 40px; max-width: 270px; border-radius: 6px; }
+#beta-avatar { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 50%; object-fit: cover; border: 1px solid #d0d7de; background: white; }
+#beta-name { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+#beta-account-menu { position: absolute; right: 0; top: calc(100% + 10px); width: 220px; padding: 6px; background: var(--beta-panel); border: 1px solid var(--beta-line); border-radius: 6px; box-shadow: 0 8px 24px #1f23281f; }
+#beta-account-menu a, #beta-account-menu button, #beta-menu nav a { display: flex; gap: 12px; align-items: center; justify-content: flex-start; min-height: 40px; margin: 0; padding: 10px 12px; color: var(--beta-ink); text-decoration: none; font: inherit; font-size: 14px; font-weight: 400; line-height: 20px; border-radius: 4px; width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; }
+#beta-account-menu a:hover, #beta-account-menu button:hover, #beta-menu nav a:hover, .beta-icon-button:hover { background: var(--beta-hover); }
+#beta-account-menu .beta-account-summary { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 12px 14px; border-bottom: 1px solid var(--beta-line); border-radius: 0; margin-bottom: 4px; cursor: default; }
+#beta-account-menu .beta-account-summary:hover { background: transparent; }
+#beta-account-menu .beta-signout { border-top: 1px solid var(--beta-line); border-radius: 0; margin-top: 4px; padding-top: 12px; color: var(--beta-ink); }
+#beta-menu-avatar { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--beta-line); background: var(--beta-panel); }
+#beta-account-menu #beta-name { min-width: 0; }
+#beta-menu { position: fixed; inset: 0 auto 0 0; margin: 0; width: 320px; max-width: calc(100% - 36px); height: 100dvh; max-height: 100dvh; padding: 20px 16px; border: 0; border-right: 1px solid var(--beta-line); border-radius: 0 8px 8px 0; background: var(--beta-panel); color: var(--beta-ink); font: 14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+#beta-menu::backdrop { background: #1f232866; }
+.beta-drawer-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; }
+.beta-drawer-heading img { object-fit: contain; }
+.beta-header [hidden], #beta-menu [hidden] { display: none !important; }
+.beta-header :focus-visible, #beta-menu :focus-visible { outline: 2px solid #0969da; outline-offset: 3px; }
+@media (max-width: 520px) {
+  .beta-header { height: 62px; min-height: 62px; padding: 0 16px; gap: 10px; }
+  .beta-header-left { gap: 12px; }
+  .beta-brand img { width: 82px; height: 30px; }
+  #beta-account-button { padding-left: 0; }
+}

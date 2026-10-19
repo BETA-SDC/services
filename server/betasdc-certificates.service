@@ -1,0 +1,14 @@
+[Unit]
+Description=Validate and deploy Betasdc TLS certificates
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /usr/local/libexec/betasdc-sync-certificates.py
+NoNewPrivileges=true
+ProtectHome=true
+ProtectSystem=strict
+PrivateTmp=true
+PrivateDevices=true
+ReadWritePaths=/etc/betasdc /run
+MemoryMax=128M
+TasksMax=16

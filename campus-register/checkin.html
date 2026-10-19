@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>扫码签到 · BETA</title>
+  <link rel="icon" href="/beta-favicon-v2.ico"><link rel="stylesheet" href="/checkin.css">
+  <script src="/icons.js" defer></script><script src="/checkin.js" type="module"></script>
+</head>
+<body class="checkin-page">
+  <header><a href="/account"><img src="/brand-logo.png" width="112" height="39" alt="BETA"></a></header>
+  <main>
+    <div id="loading" role="status">正在加载签到…</div>
+    <p id="error" class="notice error" role="alert" hidden></p>
+    <section id="manage" hidden>
+      <div class="page-heading"><div><p class="eyebrow">BETA SDC</p><h1>扫码签到</h1></div><button id="new-event" class="primary"><i data-lucide="plus"></i>新建签到</button></div>
+      <p id="access-note" class="notice" hidden></p>
+      <a id="manage-login" class="login-link" href="/login" target="_blank" rel="noopener" hidden>登录账户<i data-lucide="arrow-up-right"></i></a>
+      <div id="management-layout" class="management-layout" hidden>
+      <nav class="management-navigation" aria-label="签到管理">
+        <a id="events-nav" href="/checkin"><i data-lucide="clipboard-list"></i><span>全部签到表</span></a>
+        <a id="requests-nav" href="/checkin/requests" hidden><i data-lucide="inbox"></i>删除申请</a>
+        <a id="access-nav" href="/checkin/access-requests" hidden><i data-lucide="key-round"></i>查看申请</a>
+      </nav>
+      <div class="management-content">
+      <section id="events-section" hidden>
+        <h2 id="events-title">我发起的签到</h2>
+        <p id="empty" class="empty" hidden><i data-lucide="clipboard-list"></i>暂无签到活动</p>
+        <div class="table-scroll"><table id="events-table"><thead><tr><th>活动</th><th>状态</th><th>签到时段</th><th>人数</th><th></th></tr></thead><tbody id="events-body"></tbody></table></div>
+      </section>
+      <section id="detail" hidden>
+        <div class="section-heading"><h2 id="detail-title"></h2><span id="detail-state" class="status"></span></div>
+        <p id="detail-meta" class="muted"></p>
+        <p id="detail-calendar" class="muted" hidden></p>
+        <div class="actions">
+          <a id="detail-page-link" class="button" href="/checkin"><i data-lucide="file-text"></i>介绍与查看权限</a>
+          <button id="present"><i data-lucide="qr-code"></i>出示二维码</button>
+          <button id="toggle"><i data-lucide="pause"></i><span>暂停签到</span></button>
+          <button id="rotate" title="更换二维码，立即使旧链接失效"><i data-lucide="refresh-cw"></i>更换二维码</button>
+          <a id="records-page-link" class="button"><i data-lucide="key-round"></i>申请／查看签到记录</a>
+          <button id="delete" class="danger" title="永久删除活动及全部签到记录"><i data-lucide="trash-2"></i>删除</button>
+          <button id="request-delete"><i data-lucide="send"></i>申请删除</button>
+        </div>
+        <p id="deletion-state" class="notice" role="status" hidden></p>
+      </section>
+      <section id="access-requests-section" hidden>
+        <div class="section-heading"><h2>查看申请</h2><button id="refresh-access" class="icon-button" title="刷新查看申请" aria-label="刷新查看申请"><i data-lucide="refresh-cw"></i></button></div>
+        <p id="access-empty" class="muted" hidden>暂无查看申请</p>
+        <div class="table-scroll"><table id="access-table"><thead><tr><th>签到表／申请人</th><th>用途</th><th>状态</th><th>有效期／邮件</th><th>操作</th></tr></thead><tbody id="access-body"></tbody></table></div>
+        <div class="pagination"><span id="access-page"></span><button id="access-previous" class="icon-button" title="上一页查看申请" aria-label="上一页查看申请"><i data-lucide="chevron-left"></i></button><button id="access-next" class="icon-button" title="下一页查看申请" aria-label="下一页查看申请"><i data-lucide="chevron-right"></i></button></div>
+      </section>
+      <section id="requests-section" hidden>
+        <div class="section-heading"><h2>删除申请</h2><button id="refresh-requests" class="icon-button" title="刷新申请" aria-label="刷新申请"><i data-lucide="refresh-cw"></i></button></div>
+        <p id="requests-empty" class="muted" hidden>暂无删除申请</p>
+        <div class="table-scroll"><table id="requests-table"><thead><tr><th>签到表</th><th>申请人</th><th>申请原因</th><th>状态</th><th>审核</th></tr></thead><tbody id="requests-body"></tbody></table></div>
+        <div class="pagination"><span id="requests-page"></span><button id="requests-previous" class="icon-button" title="上一页申请" aria-label="上一页申请"><i data-lucide="chevron-left"></i></button><button id="requests-next" class="icon-button" title="下一页申请" aria-label="下一页申请"><i data-lucide="chevron-right"></i></button></div>
+      </section>
+      </div>
+      </div>
+    </section>
+    <section id="event-page" hidden>
+      <a id="page-back" href="/checkin" class="back-link" hidden><i data-lucide="arrow-left"></i>返回签到管理</a>
+      <div class="page-heading"><h1 id="page-title"></h1><a id="page-manage" class="button" hidden><i data-lucide="settings"></i>管理签到表</a></div>
+      <dl class="event-summary"><div><dt>发起人</dt><dd id="page-organizer"></dd></div><div><dt>签到人数</dt><dd><span id="page-count"></span> 人</dd></div></dl>
+      <section class="event-description"><h2>活动介绍</h2><p id="page-description"></p></section>
+      <a id="page-access" class="button" hidden><i data-lucide="key-round"></i>申请／查看签到记录</a>
+      <section id="page-editor" class="page-editor" hidden>
+        <h2>介绍与查看权限</h2>
+        <form id="page-form">
+          <label>活动介绍<textarea id="page-edit-description" maxlength="2000" rows="6"></textarea></label>
+          <label>介绍查看权限<select id="page-visibility"><option value="public">所有人可查看</option><option value="members">仅 BETA-SDC 成员可查看</option><option value="private">仅发起人和管理员可查看</option></select></label>
+          <p class="privacy-note">此设置不向公众开放名单。有权限的成员可直接查看基本名单；隐私字段及导出需管理员批准的 PAT 和二次验证。</p>
+          <p id="page-save-message" class="notice" role="status" hidden></p>
+          <p id="page-save-error" class="error" role="alert" hidden></p>
+          <button type="submit" class="primary"><i data-lucide="save"></i>保存更改</button>
+        </form>
+      </section>
+    </section>
+    <section id="records-page" hidden>
+      <a id="records-back" class="back-link"><i data-lucide="arrow-left"></i>返回活动介绍</a>
+      <h1 id="records-title"></h1>
+      <div id="record-section" hidden>
+        <p id="record-expiry" class="notice"></p>
+        <p id="legacy-notice" class="privacy-note" hidden>旧版记录仍按提交时的同意范围限制，仅显示当前查看权限允许的记录。</p>
+        <div class="section-heading records-heading"><h2>签到记录 <span id="record-count" class="count">0</span></h2><div class="actions"><button id="basic-records"><i data-lucide="list"></i>基本名单</button><button id="export" hidden><i data-lucide="download"></i>导出 CSV</button><button id="refresh" class="icon-button" title="刷新签到记录" aria-label="刷新签到记录"><i data-lucide="refresh-cw"></i></button></div></div>
+        <div class="table-scroll"><table><thead id="records-head"></thead><tbody id="records-body"></tbody></table></div>
+        <div class="pagination"><span id="page-label"></span><button id="previous" class="icon-button" title="上一页" aria-label="上一页"><i data-lucide="chevron-left"></i></button><button id="next" class="icon-button" title="下一页" aria-label="下一页"><i data-lucide="chevron-right"></i></button></div>
+      </div>
+      <section class="record-access-section">
+        <h2>申请查看隐私资料／导出</h2>
+        <p id="my-access-status" class="notice" role="status"></p>
+        <form id="access-request-form"><label>查看用途<textarea id="access-reason" rows="2" maxlength="300" required></textarea></label><button class="primary" type="submit"><i data-lucide="send"></i>提交申请</button></form>
+      </section>
+      <section class="record-access-section">
+        <h2>使用限时 PAT</h2>
+        <button id="records-factor" type="button"><i data-lucide="fingerprint"></i>完成二次验证</button>
+        <form id="pat-form"><label>PAT<input id="record-pat" type="password" autocomplete="off" spellcheck="false" required maxlength="80"></label><button class="primary" type="submit"><i data-lucide="key-round"></i>验证并查看</button></form>
+        <p class="privacy-note">审批结果及 PAT 由 BETA SDC Service 发送至绑定邮箱。PAT 仅供申请人使用，到期即失效，不要转发或放进网址。</p>
+        <p id="pat-message" class="notice" role="status" hidden></p>
+        <p id="pat-error" class="error" role="alert" hidden></p>
+      </section>
+    </section>
+    <section id="attend" hidden>
+      <p class="eyebrow">BETA SDC · 活动签到</p><h1 id="attend-title"></h1>
+      <p id="attend-location" class="muted"></p><p id="attend-time" class="muted"></p>
+      <span id="attend-state" class="status"></span>
+      <div id="success" class="success" role="status" hidden><i data-lucide="circle-check"></i><h2>签到已记录</h2><p id="receipt-time"></p><p id="receipt-id" class="muted receipt"></p></div>
+      <form id="attend-form" hidden>
+        <div class="prefill-row"><button id="prefill" class="primary" type="button" hidden><i data-lucide="user-check"></i>使用已保存信息</button><a id="attend-login" class="button primary" href="/login" target="_blank" rel="noopener"><i data-lucide="log-in"></i>登录并使用已保存信息<i data-lucide="arrow-up-right"></i></a></div>
+        <div id="answer-fields" class="form-grid"></div>
+        <p class="privacy-note">发起人：<span id="attend-organizer"></span>。接收方：管理员、活动发起人和有活动查看权限的 BETA-SDC 成员可查看姓名、邮箱、学号和签到时间；电话、证件、自定义条目需获批 PAT 及二次验证，导出还需导出授权。用途：<span id="attend-purpose"></span>。保存方式：<span id="attend-retention"></span>。名单不对公众展示；姓名、号码格式检查不代表身份或到场核验。</p>
+        <p id="document-warning" class="privacy-note" hidden><strong>本活动收集证件号码，可能涉及敏感个人信息。</strong>泄露可能造成身份冒用或诈骗，请确认用途必要后再同意提交；如有疑问请联系活动发起人。拒绝不影响基本账户功能。</p>
+        <label class="checkbox consent"><input id="consent" type="checkbox" required><span>我同意为本次活动提交以上信息，并已阅读<a href="/privacy#checkin-policy" target="_blank" rel="noopener">签到隐私说明</a>。</span></label>
+        <button id="submit" class="primary" type="submit"><i data-lucide="check"></i>确认签到</button>
+      </form>
+      <p id="unavailable" class="notice" hidden></p>
+    </section>
+    <p id="message" class="notice" role="status" hidden></p>
+  </main>
+  <dialog id="create-dialog" aria-labelledby="create-title">
+    <div class="dialog-heading"><h2 id="create-title">新建签到</h2><button type="button" data-close="create-dialog" class="icon-button" title="关闭" aria-label="关闭"><i data-lucide="x"></i></button></div>
+    <form id="create-form">
+      <label>事件日期（北京时间）<input id="calendar-date" type="date"></label>
+      <label>关联日历事件（可选）<select id="calendar-event" name="calendar_uid"><option value="">不关联，手动填写</option></select></label>
+      <p id="calendar-message" class="muted calendar-message" role="status" hidden></p>
+      <label>活动名称<input name="title" maxlength="120" required autocomplete="off"></label>
+      <label>活动介绍<textarea name="description" rows="3" maxlength="2000"></textarea></label>
+      <label>介绍查看权限<select name="visibility"><option value="public">所有人可查看</option><option value="members">仅 BETA-SDC 成员可查看</option><option value="private">仅发起人和管理员可查看</option></select></label>
+      <label>地点<input name="location" maxlength="160" autocomplete="off"></label>
+      <label>信息使用目的<textarea name="purpose" rows="2" maxlength="300" required placeholder="例如：记录本次活动出勤"></textarea></label>
+      <div class="form-grid"><label>开始时间（北京时间）<input id="starts-at" name="starts_at" type="datetime-local" required></label><label>结束时间（北京时间）<input id="ends-at" name="ends_at" type="datetime-local" required></label></div>
+      <fieldset><legend>签到必填信息</legend><div class="field-options">
+        <label class="checkbox"><input type="checkbox" name="fields" value="name" checked>姓名</label>
+        <label class="checkbox"><input type="checkbox" name="fields" value="email" checked>邮箱</label>
+        <label class="checkbox"><input type="checkbox" name="fields" value="student_id" checked>学号</label>
+        <label class="checkbox"><input type="checkbox" name="fields" value="phone">手机号码</label>
+        <label class="checkbox"><input type="checkbox" name="fields" value="document">身份证／其他证件</label>
+      </div></fieldset>
+      <fieldset><legend>其他必填条目</legend><div id="custom-fields"></div><button id="add-custom" type="button"><i data-lucide="plus"></i>添加条目</button></fieldset>
+      <p class="privacy-note">仅收集本次活动必要的信息；至少选择邮箱、学号、手机号或证件中的一项。证件仅在确有必要时收集，查看需要二次验证。请勿通过自定义条目收集密码、验证码或支付资料。签到资料长期加密保存，不按时间自动删除，由管理员管理；普通成员删除需申请审核。</p>
+      <p id="create-error" class="error" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" data-close="create-dialog">取消</button><button type="submit" class="primary"><i data-lucide="qr-code"></i>创建签到</button></div>
+    </form>
+  </dialog>
+  <dialog id="access-review-dialog" aria-labelledby="access-review-title">
+    <div class="dialog-heading"><h2 id="access-review-title">审核查看申请</h2><button type="button" data-close="access-review-dialog" class="icon-button" title="关闭" aria-label="关闭"><i data-lucide="x"></i></button></div>
+    <form id="access-review-form">
+      <p id="access-review-summary" class="notice"></p>
+      <label>PAT 到期时间（北京时间）<input id="access-expires" type="datetime-local" required></label>
+      <label class="checkbox"><input id="access-export" type="checkbox">允许导出（仅管理员申请人可用）</label>
+      <label>审核备注<textarea id="access-review-note" maxlength="300" rows="2"></textarea></label>
+      <p id="access-review-error" class="error" role="alert" hidden></p>
+      <div class="dialog-actions"><button name="decision" value="reject" type="submit" formnovalidate><i data-lucide="x"></i>驳回</button><button name="decision" value="approve" type="submit" class="primary"><i data-lucide="mail"></i>批准并邮件发送 PAT</button></div>
+    </form>
+  </dialog>
+  <dialog id="deletion-dialog" aria-labelledby="deletion-title">
+    <div class="dialog-heading"><h2 id="deletion-title">申请删除签到表</h2><button type="button" data-close="deletion-dialog" class="icon-button" title="关闭" aria-label="关闭"><i data-lucide="x"></i></button></div>
+    <form id="deletion-form"><p id="deletion-event" class="notice"></p><label>删除原因<textarea id="deletion-reason" rows="3" maxlength="300" required></textarea></label><p id="deletion-error" class="error" role="alert" hidden></p><div class="dialog-actions"><button type="button" data-close="deletion-dialog">取消</button><button type="submit" class="primary"><i data-lucide="send"></i>提交申请</button></div></form>
+  </dialog>
+  <dialog id="review-dialog" aria-labelledby="review-title">
+    <div class="dialog-heading"><h2 id="review-title">审核删除申请</h2><button type="button" data-close="review-dialog" class="icon-button" title="关闭" aria-label="关闭"><i data-lucide="x"></i></button></div>
+    <form id="review-form"><p id="review-summary" class="notice"></p><label>审核备注<textarea id="review-note" rows="3" maxlength="300"></textarea></label><p class="privacy-note">批准后永久删除签到表和全部签到记录，申请及审核记录保留。</p><p id="review-error" class="error" role="alert" hidden></p><div class="dialog-actions"><button type="submit" name="decision" value="reject"><i data-lucide="x"></i>驳回申请</button><button type="submit" name="decision" value="approve" class="danger"><i data-lucide="check"></i>批准删除</button></div></form>
+  </dialog>
+  <dialog id="qr-dialog" aria-labelledby="qr-title">
+    <div class="dialog-heading"><h2 id="qr-title"></h2><div class="actions"><button id="fullscreen" class="icon-button" title="全屏显示" aria-label="全屏显示"><i data-lucide="expand"></i></button><button data-close="qr-dialog" class="icon-button" title="关闭" aria-label="关闭"><i data-lucide="x"></i></button></div></div>
+    <div class="qr-display"><img id="qr-image" width="320" height="320" alt="活动签到二维码"></div>
+    <p id="qr-count" class="qr-count"></p><p id="qr-time" class="muted"></p><p class="privacy-note">校园网内访问 · 请勿将二维码转发给无关人员</p>
+    <label class="share-link">签到链接<input id="join-url" readonly></label>
+    <div class="dialog-actions"><button id="copy-url"><i data-lucide="copy"></i>复制链接</button><a id="download-qr" class="button" download="checkin-qr.svg"><i data-lucide="download"></i>保存二维码</a></div>
+  </dialog>
+  <dialog id="factor-dialog" aria-labelledby="factor-title">
+    <div class="dialog-heading"><h2 id="factor-title">二次验证</h2><button type="button" data-close="factor-dialog" class="icon-button" title="取消验证" aria-label="取消验证"><i data-lucide="x"></i></button></div>
+    <button id="factor-passkey" class="wide"><i data-lucide="fingerprint"></i>使用通行密钥</button>
+    <div class="factor-email"><button id="factor-send"><i data-lucide="mail"></i>发送邮箱验证码</button><form id="factor-form"><label>邮箱验证码<input id="factor-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></label><button class="primary" type="submit">验证</button></form></div>
+    <p id="factor-message" class="muted" role="status"></p><p id="factor-error" class="error" role="alert" hidden></p>
+  </dialog>
+</body>
+</html>

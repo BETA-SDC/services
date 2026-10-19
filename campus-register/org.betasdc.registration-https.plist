@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.betasdc.registration-https</string>
+    <key>UserName</key>
+    <string>jietexue</string>
+    <key>GroupName</key>
+    <string>staff</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>-I</string>
+        <string>/Users/jietexue/Library/Application Support/BetasdcDemo/app.py</string>
+        <string>--bind</string>
+        <string>10.17.131.26</string>
+        <string>--port</string>
+        <string>443</string>
+        <string>--launchd-socket</string>
+        <string>CampusHTTPS</string>
+        <string>--database</string>
+        <string>/Users/jietexue/Library/Application Support/BetasdcDemo/registrations.sqlite3</string>
+        <string>--allow</string>
+        <string>10.17.128.0/18</string>
+        <string>--cert</string>
+        <string>/Users/jietexue/Library/Application Support/BetasdcDemo/register-tls/fullchain.pem</string>
+        <string>--key</string>
+        <string>/Users/jietexue/Library/Application Support/BetasdcDemo/register-tls/key.pem</string>
+    </array>
+    <key>Sockets</key>
+    <dict>
+        <key>CampusHTTPS</key>
+        <dict>
+            <key>SockFamily</key>
+            <string>IPv4</string>
+            <key>SockType</key>
+            <string>stream</string>
+            <key>SockNodeName</key>
+            <string>10.17.131.26</string>
+            <key>SockServiceName</key>
+            <string>443</string>
+            <key>SockPassive</key>
+            <true/>
+        </dict>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+</dict>
+</plist>

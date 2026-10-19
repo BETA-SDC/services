@@ -1,0 +1,45 @@
+# Local editors and generated caches.
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.playwright-cli/
+playwright-report/
+test-results/
+
+# Dependencies and local environments.
+.venv/
+venv/
+node_modules/
+_vendor/
+
+# Runtime databases, state and logs.
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.log
+*.pid
+backups/
+runtime/
+
+# Credentials and private certificate material must stay outside Git.
+.env
+.env.*
+!.env.example
+secrets/
+.secrets/
+*.token
+*.key
+*.private-key
+*.session-key
+*.pem
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*

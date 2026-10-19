@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>账户管理 · BETA</title>
+  <link rel="icon" href="/beta-favicon-v2.ico">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/admin.css">
+  <script src="/icons.js" defer></script>
+  <script src="/admin.js" defer></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="/account"><img src="/brand-logo.png" width="112" height="39" alt="BETA"></a><a href="/account">我的账户</a></header>
+  <main class="admin-main">
+    <div class="admin-heading"><h1>账户管理</h1><button id="reload" class="secondary" type="button" title="刷新" aria-label="刷新"><i data-lucide="refresh-cw" aria-hidden="true"></i></button></div>
+    <p id="admin-status" class="status" role="status" hidden></p>
+    <p id="admin-error" class="error" role="alert" hidden></p>
+    <nav class="admin-tabs" aria-label="管理视图"><button type="button" data-view="members" aria-selected="true">成员</button><button type="button" data-view="groups" aria-selected="false">分组</button><button type="button" data-view="addresses" aria-selected="false">主页地址</button><button type="button" data-view="audit" aria-selected="false">操作记录</button></nav>
+    <section id="members-view">
+      <div class="admin-toolbar"><label for="group-filter">分组</label><select id="group-filter"><option value="">全部</option></select><span id="member-count"></span></div>
+      <div class="table-scroll"><table><thead><tr><th>账户</th><th>GitHub</th><th>组织同步</th><th>角色</th><th>分组</th><th>操作</th></tr></thead><tbody id="members-body"></tbody></table></div>
+      <div class="pagination"><button id="previous" class="secondary" type="button" title="上一页" aria-label="上一页"><i data-lucide="chevron-left"></i></button><span id="page-label"></span><button id="next" class="secondary" type="button" title="下一页" aria-label="下一页"><i data-lucide="chevron-right"></i></button></div>
+    </section>
+    <section id="groups-view" hidden>
+      <form id="create-group" class="group-form"><div class="field"><label for="group-name">分组名称</label><input id="group-name" maxlength="80" required></div><div class="field"><label for="group-parent">上级分组</label><select id="group-parent"><option value="">无</option></select></div><button class="primary" type="submit"><i data-lucide="plus"></i><span>创建分组</span></button></form>
+      <div id="group-tree"></div><p id="groups-empty" class="field-hint" hidden>暂无分组</p>
+    </section>
+    <section id="addresses-view" hidden><div class="table-scroll"><table><thead><tr><th>账户</th><th>申请地址</th><th>申请时间</th><th>操作</th></tr></thead><tbody id="addresses-body"></tbody></table></div></section>
+    <section id="audit-view" hidden><div class="table-scroll"><table><thead><tr><th>时间</th><th>操作者</th><th>操作</th><th>对象</th></tr></thead><tbody id="audit-body"></tbody></table></div></section>
+    <dialog id="membership-dialog"><form id="edit-membership"><h2 id="membership-title">分组</h2><div id="membership-options"></div><div class="dialog-actions"><button id="cancel-membership" class="secondary" type="button">取消</button><button class="primary" type="submit"><i data-lucide="check"></i><span>保存</span></button></div></form></dialog>
+  </main>
+</body>
+</html>

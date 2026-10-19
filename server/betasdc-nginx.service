@@ -1,0 +1,29 @@
+[Unit]
+Description=Betasdc campus HTTPS proxy
+After=network-online.target betasdc.service
+Wants=network-online.target betasdc.service
+
+[Service]
+Type=simple
+RuntimeDirectory=betasdc-nginx
+RuntimeDirectoryMode=0755
+ExecStartPre=/usr/sbin/nginx -e stderr -t -c /etc/betasdc/nginx.conf
+ExecStart=/usr/sbin/nginx -e stderr -c /etc/betasdc/nginx.conf -g "daemon off;"
+ExecReload=/usr/sbin/nginx -e stderr -t -c /etc/betasdc/nginx.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10
+ProtectHome=true
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/run/betasdc-nginx /var/cache/betasdc-nginx
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_SETUID CAP_SETGID CAP_CHOWN CAP_DAC_OVERRIDE
+MemoryMax=128M
+TasksMax=16
+
+[Install]
+WantedBy=multi-user.target

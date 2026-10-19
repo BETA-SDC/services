@@ -1,0 +1,35 @@
+[Unit]
+Description=BETA private GitHub identity broker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=betasdc-github
+Group=www-data
+WorkingDirectory=/opt/betasdc
+ExecStart=/usr/bin/python3 -B -m server.github_broker
+LoadCredential=github-client-id:/etc/betasdc/github-client-id
+LoadCredential=github-client-secret:/etc/betasdc/github-client-secret
+RuntimeDirectory=betasdc-github
+RuntimeDirectoryMode=0750
+UMask=0007
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+MemoryMax=96M
+TasksMax=16
+LimitNOFILE=128
+ReadWritePaths=/run/betasdc-github
+
+[Install]
+WantedBy=multi-user.target

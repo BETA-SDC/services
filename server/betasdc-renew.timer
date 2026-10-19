@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Betasdc certificate renewal check
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1d
+RandomizedDelaySec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,34 @@
+.admin-main { display: block; max-width: 1200px; width: 100%; min-height: 70vh; margin: 36px auto; padding: 0 24px; }
+.admin-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.admin-heading h1 { font-size: 26px; }
+.admin-heading button { width: 40px; padding: 8px; }
+.admin-tabs { display: flex; gap: 24px; border-bottom: 1px solid #dce2de; margin: 20px 0; }
+.admin-tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 12px 0; color: #59665f; cursor: pointer; }
+.admin-tabs button[aria-selected="true"] { border-color: #176e55; color: #176e55; }
+.admin-toolbar, .pagination, .dialog-actions { display: flex; align-items: center; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+select { max-width: 100%; padding: 9px; border: 1px solid #cbd5cf; border-radius: 5px; background: #fff; font: inherit; min-width: 0; }
+.table-scroll { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+th { background: #f3f5f4; color: #57635c; font-weight: 600; }
+td, th { padding: 14px 12px; border-bottom: 1px solid #e4e9e6; vertical-align: top; }
+td { overflow-wrap: anywhere; min-width: 100px; }
+td small { display: block; color: #67746d; margin-top: 4px; }
+td button { font: inherit; white-space: nowrap; }
+.admin-main td .secondary { margin: 0 0 6px; }
+.admin-main .secondary, .admin-main .primary { width: auto; min-height: 38px; margin: 0; font-size: 13px; }
+.admin-main .pagination button { width: 38px; padding: 8px; }
+.group-form { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) auto; gap: 16px; align-items: end; padding-bottom: 24px; border-bottom: 1px solid #e4e9e6; }
+.group-form .field { margin: 0; }
+.group-form .primary { align-self: end; }
+.group-node { display: flex; align-items: center; gap: 12px; padding: 14px 8px; border-bottom: 1px solid #e4e9e6; flex-wrap: wrap; }
+.group-node strong { overflow-wrap: anywhere; }
+.group-node small { color: #69756f; }
+.group-node .group-actions { margin-left: auto; display: flex; gap: 8px; }
+.tree-children { margin-left: 18px; border-left: 1px solid #dce2de; padding-left: 8px; }
+dialog { width: min(440px, calc(100% - 32px)); border: 1px solid #d0d9d3; border-radius: 8px; padding: 24px; }
+dialog::backdrop { background: #0005; }
+dialog h2 { font-size: 20px; margin-top: 0; overflow-wrap: anywhere; }
+#membership-options { max-height: 50vh; overflow: auto; }
+#membership-options label { display: flex; gap: 10px; align-items: center; margin: 14px 0; overflow-wrap: anywhere; }
+#membership-options input { width: 18px; height: 18px; flex: 0 0 18px; }
+@media(max-width: 600px) { .admin-main { padding: 0 16px; margin-top: 24px; } .group-form { grid-template-columns: minmax(0, 1fr); } .tree-children { margin-left: 8px; padding-left: 4px; } }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key><string>org.betasdc.registration-backend</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/sandbox-exec</string>
+        <string>-f</string>
+        <string>/Users/jietexue/Library/Application Support/BetasdcDemo/registration.sb</string>
+        <string>/usr/bin/python3</string><string>-I</string>
+        <string>/Users/jietexue/Library/Application Support/BetasdcDemo/app.py</string>
+        <string>--bind</string><string>127.0.0.1</string>
+        <string>--port</string><string>18080</string>
+        <string>--proxy-port</string><string>8443</string>
+        <string>--database</string>
+        <string>/Users/jietexue/Library/Application Support/BetasdcDemo/registrations.sqlite3</string>
+        <string>--allow</string><string>10.17.128.0/18</string>
+    </array>
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key><true/>
+    <key>ThrottleInterval</key><integer>10</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/jietexue/Library/Application Support/BetasdcDemo/backend.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/jietexue/Library/Application Support/BetasdcDemo/backend.error.log</string>
+</dict>
+</plist>
