@@ -103,7 +103,8 @@ class CheckinArchitectureTests(unittest.TestCase):
 
     def test_release_manifest_covers_all_modules_and_has_no_missing_paths(self):
         manifest = json.loads((ROOT / "server/checkin-release.json").read_text())
-        for key, base in (("files", ROOT), ("assets", ASSETS), ("units", ROOT / "server")):
+        unit_directory = ROOT / "server" if (ROOT / "campus-register").is_dir() else Path("/etc/systemd/system")
+        for key, base in (("files", ROOT), ("assets", ASSETS), ("units", unit_directory)):
             paths = manifest[key]
             self.assertEqual(len(paths), len(set(paths)))
             for value in paths:
