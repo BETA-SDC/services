@@ -52,8 +52,8 @@ Unix socket 访问限制和服务进程隔离。匿名用户能打开登录页�
 
 | 内容 | 本机源码 | Linux 运行位置 |
 | --- | --- | --- |
-| 账户后端 | `/Users/jietexue/_projects/betasdc/server/registration/` | `/opt/betasdc/server/registration/` |
-| 前端与共用模板 | `/Users/jietexue/_projects/betasdc/campus-register/` | `/opt/betasdc/static/` |
+| 账户后端 | `/Users/jietexue/20_westlake/BETA-SDC/services/server/registration/` | `/opt/betasdc/server/registration/` |
+| 前端与共用模板 | `/Users/jietexue/20_westlake/BETA-SDC/services/campus-register/` | `/opt/betasdc/static/` |
 | 日历项目 | `/Users/jietexue/20_westlake/BETA-SDC/calendar/` | `/opt/betasdc-calendar/` |
 | 账户依赖 | `server/requirements-private.txt`、`requirements-checkin.txt` | `/opt/betasdc/server/_vendor/` |
 | 日历 Python 环境 | 本机测试环境与服务器分开 | `/opt/betasdc-calendar/.venv/` |
@@ -63,7 +63,9 @@ Linux 主机：`550c.duckdns.org`，管理用户 `jet`，本机 SSH 别名 `beta
 本机用于编辑和测试；只有部署后的 `/opt` 文件参与线上运行。
 执行命令时必须明确工作目录及主机，不能把本机成功当成服务器上线成功。
 
-账户项目已建立本地 Git 仓库，分支为 `main`，尚未配置远程仓库，修改测试后在本地提交。
+服务源码位于 `/Users/jietexue/20_westlake/BETA-SDC/services/`，分支为 `main`，
+远程公开仓库为 `BETA-SDC/services`，修改测试后提交并推送。
+仓库中的 `calendar/` 子模块固定日历版本；同级 `BETA-SDC/calendar/` 为独立日历工作副本。
 日历项目属于 `BETA-SDC/calendar` Git 仓库，修改应测试、提交并推送；GitHub Pages 构建和 Linux
 应用代码部署不是同一件事，推送不能自动证明后端已更新。
 

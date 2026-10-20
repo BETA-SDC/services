@@ -73,7 +73,7 @@ permanently.
 The administrator setup is prepared but has not been run. In a local terminal:
 
 ```sh
-sudo /bin/sh /Users/jietexue/_projects/betasdc/campus-register/enable-nginx-443.sh
+sudo /bin/sh /Users/jietexue/20_westlake/BETA-SDC/services/campus-register/enable-nginx-443.sh
 ```
 
 Enter the Mac administrator password only in the terminal, never in chat.

@@ -25,7 +25,7 @@ import sqlite3
 paths = [
     "/Users/jietexue/Library/Application Support/DuckDNS/betasdc.token",
     "/Users/jietexue/Library/BetasdcACME/account.conf",
-    "/Users/jietexue/_projects/betasdc/campus-register/app.py",
+    "/Users/jietexue/20_westlake/BETA-SDC/services/campus-register/app.py",
 ]
 for path in paths:
     try:
