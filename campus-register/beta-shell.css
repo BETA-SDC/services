@@ -18,8 +18,7 @@ body[data-theme="dark"] #beta-account-menu button { background: transparent; }
 #beta-account-menu { position: absolute; right: 0; top: calc(100% + 10px); width: 220px; padding: 6px; background: var(--beta-panel); border: 1px solid var(--beta-line); border-radius: 6px; box-shadow: 0 8px 24px #1f23281f; }
 #beta-account-menu a, #beta-account-menu button, #beta-menu nav a { display: flex; gap: 12px; align-items: center; justify-content: flex-start; min-height: 40px; margin: 0; padding: 10px 12px; color: var(--beta-ink); text-decoration: none; font: inherit; font-size: 14px; font-weight: 400; line-height: 20px; border-radius: 4px; width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; }
 #beta-account-menu a:hover, #beta-account-menu button:hover, #beta-menu nav a:hover, .beta-icon-button:hover { background: var(--beta-hover); }
-#beta-account-menu .beta-account-summary { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 12px 14px; border-bottom: 1px solid var(--beta-line); border-radius: 0; margin-bottom: 4px; cursor: default; }
-#beta-account-menu .beta-account-summary:hover { background: transparent; }
+#beta-account-menu .beta-account-summary { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 12px 14px; border-bottom: 1px solid var(--beta-line); border-radius: 0; margin-bottom: 4px; }
 #beta-account-menu .beta-signout { border-top: 1px solid var(--beta-line); border-radius: 0; margin-top: 4px; padding-top: 12px; color: var(--beta-ink); }
 #beta-menu-avatar { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--beta-line); background: var(--beta-panel); }
 #beta-account-menu #beta-name { min-width: 0; }

@@ -6,7 +6,7 @@
   const host = location.hostname;
   const header = document.createElement("header");
   header.className = "beta-header";
-  header.innerHTML = `<div class="beta-header-left"><button class="beta-icon-button" id="beta-menu-open" type="button" aria-label="Open menu" title="Open menu" aria-haspopup="dialog"><i data-lucide="menu"></i></button><a class="beta-brand" href="${calendar}/sso/start?next=%2Fcalendar%2F"><img src="/brand-logo.png" width="112" height="39" alt="BETA"></a></div><div class="beta-account"><button id="beta-account-button" type="button" aria-label="Open user menu" title="Open user menu" aria-haspopup="menu" aria-expanded="false" aria-controls="beta-account-menu"><img id="beta-avatar" src="/default-avatar.png" width="32" height="32" alt=""></button><div id="beta-account-menu" role="menu" hidden><div class="beta-account-summary"><img id="beta-menu-avatar" src="/default-avatar.png" width="36" height="36" alt=""><span id="beta-name">Sign in</span></div><a id="beta-profile-link" role="menuitem" href="${account}/login"><i data-lucide="user-round"></i><span>Profile</span></a><a role="menuitem" href="${account}/account"><i data-lucide="settings"></i><span>Settings</span></a><button id="beta-signout" class="beta-signout" role="menuitem" type="button"><i data-lucide="log-out"></i><span>Sign out</span></button></div></div>`;
+  header.innerHTML = `<div class="beta-header-left"><button class="beta-icon-button" id="beta-menu-open" type="button" aria-label="Open menu" title="Open menu" aria-haspopup="dialog"><i data-lucide="menu"></i></button><a class="beta-brand" href="${calendar}/sso/start?next=%2Fcalendar%2F"><img src="/brand-logo.png" width="112" height="39" alt="BETA"></a></div><div class="beta-account"><button id="beta-account-button" type="button" aria-label="Open user menu" title="Open user menu" aria-haspopup="menu" aria-expanded="false" aria-controls="beta-account-menu"><img id="beta-avatar" src="/default-avatar.png" width="32" height="32" alt=""></button><div id="beta-account-menu" role="menu" hidden><a id="beta-summary-link" class="beta-account-summary" role="menuitem" href="${account}/login"><img id="beta-menu-avatar" src="/default-avatar.png" width="36" height="36" alt=""><span id="beta-name">Sign in</span></a><a id="beta-profile-link" role="menuitem" href="${account}/login"><i data-lucide="user-round"></i><span>Profile</span></a><a role="menuitem" href="${account}/account"><i data-lucide="settings"></i><span>Settings</span></a><button id="beta-signout" class="beta-signout" role="menuitem" type="button"><i data-lucide="log-out"></i><span>Sign out</span></button></div></div>`;
   const oldHeader = document.querySelector("body > header");
   if (oldHeader) oldHeader.replaceWith(header);
   else document.body.prepend(header);
@@ -76,6 +76,7 @@
     header.querySelector("#beta-profile-link").href = user
       ? `${profile}/sso/start?next=${encodeURIComponent("/" + user.profile.slug)}`
       : `${account}/login`;
+    header.querySelector("#beta-summary-link").href = header.querySelector("#beta-profile-link").href;
     if (state.continue_url && host === new URL(account).hostname) {
       location.replace(state.continue_url);
       return state;
