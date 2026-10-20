@@ -1,0 +1,3 @@
+[submodule "calendar"]
+	path = calendar
+	url = https://github.com/BETA-SDC/calendar.git

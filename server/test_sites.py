@@ -115,14 +115,14 @@ class SitesTests(unittest.TestCase):
     def test_default_profile_path_is_registration_number_not_display_name(self):
         self.assertEqual(
             self.post(ACCOUNT_HOST, "/api/profile",
-                      {"real_name": "杨轩", "nickname": "小恐龙"}).status_code,
+                      {"real_name": "测试成员", "nickname": "测试昵称"}).status_code,
             200,
         )
         result = self.get(PROFILE_HOST, "/api/public-profile/u_demo")
         self.assertEqual(result.status_code, 200, result.json)
         self.assertEqual(result.json["slug"], "u_demo")
-        self.assertEqual(result.json["name"], "小恐龙")
-        self.assertEqual(self.get(PROFILE_HOST, "/api/public-profile/杨轩").status_code, 404)
+        self.assertEqual(result.json["name"], "测试昵称")
+        self.assertEqual(self.get(PROFILE_HOST, "/api/public-profile/测试成员").status_code, 404)
 
     def test_global_color_preference_is_account_only_and_shared_in_site_session(self):
         self.assertEqual(self.get(ACCOUNT_HOST, "/api/preferences").json["theme"], "system")
