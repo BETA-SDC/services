@@ -63,6 +63,20 @@ node --test campus-register/tests/*.test.mjs
 回滚；它有部署环境约束，迁移到其他主机前必须阅读并调整相应配置。公开仓库的
 更新不会自动部署到生产服务器。
 
+仅升级 550c 上已有的日历服务时，使用日历子模块的升级脚本，不运行账户服务的
+全量升级入口。在服务器的本仓库检出目录执行：
+
+```sh
+git submodule update --init calendar
+sudo sh calendar/deploy/upgrade-existing.sh \
+  "$PWD/calendar" "$(git -C calendar rev-parse HEAD)"
+```
+
+脚本备份并更新日历的 `server/`、`scripts/` 和 `web/`，等待 worker 发布指定
+提交后重载 Web 服务，并检查 HTTPS 接口；失败时恢复代码和原发布快照。
+不会重写账号数据库、部署凭据、Nginx 配置或监听端口。子模块版本更新需先验证
+日历仓库，再提交本仓库中的子模块指针，不能仅更新子模块工作区而遗漏父仓库提交。
+
 不要提交数据库、用户资料、备份、邮件队列、`.env`、SSH 私钥、SMTP 授权码、
 OAuth secret、DuckDNS token 或证书私钥。`.gitignore` 已排除常见的运行文件；
 提交前仍需检查差异及历史。发现安全问题时请发送不含真实凭据和用户资料的说明
